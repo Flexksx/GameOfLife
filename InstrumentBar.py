@@ -51,11 +51,13 @@ class InstrumentBar:
         blue = self.blue_color_button.get_state()
         green = self.green_color_button.get_state()
         white = self.white_color_button.get_state()
+        high = self.high_state_button.get_state()
         states_dict['pause'] = pause
         states_dict['red'] = red
         states_dict['blue'] = blue
         states_dict['green'] = green
         states_dict['white'] = white
+        states_dict['high'] = high
         if red and not blue and not green and not white:
             states_dict['red'] = True
             states_dict['blue'] = False
@@ -99,14 +101,20 @@ class Button:
         self.text = text
         self.font = pygame.font.SysFont('arialblk', 15)
         self.surface = surface
-        self.message = self.font.render(self.text, 1, (0,0,0))
         if init_state is not None:
             self.current_state = init_state
         else:
             self.current_state = False
+            
     def draw(self):
-        pygame.draw.rect(self.surface, self.color, (self.x, self.y, self.xsize, self.ysize))
-        self.surface.blit(self.message, (self.x+10, self.y+10))
+        if not self.current_state:
+            pygame.draw.rect(self.surface, self.color, (self.x, self.y, self.xsize, self.ysize))
+            self.message = self.font.render(self.text, 1, (0,0,0))
+            self.surface.blit(self.message, (self.x+10, self.y+10))
+        else:
+            pygame.draw.rect(self.surface, (255,255,255), (self.x, self.y, self.xsize, self.ysize))
+            self.message = self.font.render(self.text, 1, self.color)
+            self.surface.blit(self.message, (self.x+10, self.y+10))
         # pygame.display.flip()
         
     def get_state(self):
@@ -120,3 +128,4 @@ class Button:
     def set_state(self, state:bool):
         self.current_state = state
         return self.current_state
+    

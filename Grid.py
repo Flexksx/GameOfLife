@@ -31,8 +31,9 @@ class Grid:
                     if alive_cell:
                         random_color = random.choice(
                             ['Red', 'Blue', 'Green', 'Black', 'White'])
+                        high = random.choice([True, False])
                         self.grid[row][col] = Cell(color=random_color, pos=(
-                            row*self.cell_size, col*self.cell_size), size=self.cell_size, is_alive=True)
+                            row*self.cell_size, col*self.cell_size), size=self.cell_size, is_alive=True, is_high=high)
                     else:
                         self.grid[row][col] = Cell(color=(0, 0, 0), pos=(
                             row*self.cell_size, col*self.cell_size), size=self.cell_size, is_alive=False)
