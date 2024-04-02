@@ -27,30 +27,30 @@ class Game:
 
     def run(self):
         self.paused = False
-        self.grid.draw()
         self.grid.update()
-        pygame.display.flip()
+        # pygame.display.flip()
 
     def quit(self):
         pygame.quit()
 
     def pause(self):
-        print("Pausing")
         self.paused = True
         self.grid.draw()
         self.__write_pause_message()
-        pygame.display.flip()
+        # pygame.display.flip()
 
-    def __handle_cell_placing(self):
+    def __handle_cell_placing(self,color=None):
         mouse_pressed = pygame.mouse.get_pressed()
         if mouse_pressed[0]:
             pos = pygame.mouse.get_pos()
             row = pos[0]//self.grid.cell_size
             col = pos[1]//self.grid.cell_size
             if row < self.grid.rows and col < self.grid.cols:
-                random_color = random.choice(['Red', 'Blue', 'Green'])
-                self.grid.grid[row][col].birth(color=random_color)
-                print(f"Cell placed at {row},{col} with color {random_color}")
+                if color is None:
+                    color = random.choice(
+                        ['Red', 'Blue', 'Green', 'Black', 'White'])
+                self.grid.grid[row][col].birth(color=color)
+                print(f"Cell placed at {row},{col} with color {color}")
 
     def __handle_cell_killing(self):
         mouse_pressed = pygame.mouse.get_pressed()
@@ -65,17 +65,21 @@ class Game:
 
 
     def mainloop(self):
+        self.paused = True
+        tick_count = 0
         while True:
             self.clock.tick(self.fps)
             self.instrument_bar.draw()
             self.grid.draw()
             states= self.instrument_bar.get_states()
             self.paused = states['pause']
-            print(states)
+            # print(states) 
             if self.paused:
                 self.pause()
             else:
-                self.run()
+                tick_count += 1
+                if tick_count % 7 == 0:
+                    self.run()
             for event in pygame.event.get():
                 mouse_pressed = pygame.mouse.get_pressed()
                 if event.type == pygame.QUIT:
@@ -84,41 +88,22 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.paused = not self.paused
+                        self.instrument_bar.set_states({'pause':self.paused})
                     if event.key == pygame.K_q:
                         self.quit()
                 elif mouse_pressed[0]:
-                    self.__handle_cell_placing()
+                    if states['red']:
+                        self.__handle_cell_placing(color='Red')
+                    elif states['blue']:
+                        self.__handle_cell_placing(color='Blue')
+                    elif states['green']:
+                        self.__handle_cell_placing(color='Green')
+                    elif states['white']:
+                        self.__handle_cell_placing(color='White')
+                    else:
+                        self.__handle_cell_placing()
                 elif mouse_pressed[2]:
                     self.__handle_cell_killing()
+            pygame.display.flip()
                     
                     
-    # def handle_input(self):
-    #     self.instrument_bar.draw()
-    #     # self.handle_instrument_bar()
-    #     previus_states = self.instrument_bar.get_states()
-    #     states= self.instrument_bar.get_states()
-    #     print(states)
-    #     if states['pause']:
-    #         print("Pausing")
-    #         # self.pause()
-    #     else:
-    #         print("Resuming")
-    #         # self.running = True
-    #         # self.run()
-    #     for event in pygame.event.get():
-    #         mouse_pressed = pygame.mouse.get_pressed()
-    #         if event.type == pygame.QUIT: 
-    #             self.running = False
-    #             self.quit()
-    #         elif event.type == pygame.KEYDOWN:
-    #             if event.key == pygame.K_SPACE:
-    #                 if self.paused:
-    #                     self.pause()
-    #                 else:
-    #                     self.run()
-    #             if event.key == pygame.K_q:
-    #                 self.quit()
-    #         elif mouse_pressed[0]:
-    #             self.__handle_cell_placing()
-    #         elif mouse_pressed[2]:
-    #             self.__handle_cell_killing()
