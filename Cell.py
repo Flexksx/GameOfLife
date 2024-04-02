@@ -33,14 +33,21 @@ class Cell:
                 self.color = (0,0,0)
             elif color == 'White':
                 self.color = (255,255,255)
-    
+            elif color == 'Magenta':
+                self.color = (255,0,255)
+            elif color == 'Yellow':
+                self.color = (255,255,0)
+            elif color == 'Cyan':
+                self.color = (0,255,255)
+
     def update(self):
-        # if self.is_alive==False:
-            # self.color = (0,0,0)
-        if self.color[0]<50 and self.color[1]<50 and self.color[2]<50:
-            self.kill()
-        if self.is_high:
-            print('High')
+        if self.is_alive:
+            if not self.is_high:
+                if self.color[0]<255/2 and self.color[1]<255/2 and self.color[2]<255/2:
+                    self.kill()
+            else:
+                if self.color[0]<200 and self.color[1]<200 and self.color[2]<200:
+                    self.kill()
             
     def birth(self, neighbour_count:int=None, neighbour_list:list=None, color:str=None, is_high:bool=None):
         if neighbour_count is not None and neighbour_list is not None:
@@ -57,9 +64,9 @@ class Cell:
         self.is_alive = True
         if self.is_high:
             print('High')
-        new_color_red=0
-        new_color_green=0
-        new_color_blue=0
+        new_color_red=self.color[0]
+        new_color_green=self.color[1]
+        new_color_blue=self.color[2]
         red_division=1
         green_division=1
         blue_division=1

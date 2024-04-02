@@ -49,7 +49,7 @@ class Game:
             if row < self.grid.rows and col < self.grid.cols:
                 if color is None:
                     color = random.choice(
-                        ['Red', 'Blue', 'Green', 'Black', 'White'])
+                        ['Red', 'Blue', 'Green', 'Black', 'White','Magenta','Yellow','Cyan'])
                 self.grid.grid[row][col].birth(color=color, is_high=is_high)
                 print(f"Cell placed at {row,col} with color {self.grid.grid[row][col].color} with high {self.grid.grid[row][col].is_high}")
 
@@ -109,7 +109,6 @@ class Game:
                     elif states['white']:
                         self.__handle_cell_placing(color='White', is_high=states['high'])
                     else:
-                        print(states['high'])
                         self.__handle_cell_placing(is_high=states['high'])
                 elif mouse_pressed[2]:
                     self.__handle_cell_killing()

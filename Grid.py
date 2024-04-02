@@ -4,7 +4,7 @@ from Cell import Cell
 
 
 class Grid:
-    def __init__(self, cell_size: int = None, x_size: int = None, y_size: int = None,surface:pygame.display=None, randomize: bool = True, random_cells: float = 0.5) -> None:
+    def __init__(self, cell_size: int = None, x_size: int = None, y_size: int = None, surface: pygame.display = None, randomize: bool = True, random_cells: float = 0.5) -> None:
         self.x_size = x_size
         self.y_size = y_size
         self.surface = surface
@@ -61,7 +61,17 @@ class Grid:
                         except IndexError:
                             continue
                 if self.grid[row][col].is_alive:
-                    if count_neighbours < 2 or count_neighbours > 3:
+                    count_high_neighbours = 0
+                    for neighbour in list_neighbours:
+                        if neighbour.is_high:
+                            count_high_neighbours += 1
+                    if count_neighbours < 2:
+                        if count_high_neighbours > 0:
+                            cells_to_birth.update(
+                                {self.grid[row][col]: [count_neighbours, list_neighbours]})
+                        else:
+                            cells_to_kill.append(self.grid[row][col])
+                    if count_neighbours > 3:
                         cells_to_kill.append(self.grid[row][col])
                 elif not self.grid[row][col].is_alive:
                     if count_neighbours == 3:
@@ -72,3 +82,23 @@ class Grid:
         for cell in cells_to_birth.keys():
             cell.birth(
                 neighbour_count=cells_to_birth[cell][0], neighbour_list=cells_to_birth[cell][1])
+        self.zone()
+
+    def zone(self):
+        interval = 3
+        self.x_start = self.rows//2-interval
+        self.y_start = self.cols//2-interval
+        self.x_end = self.rows//2+interval
+        self.y_end = self.cols//2+interval
+        neighbours = []
+        for row in range(self.x_start, self.x_end):
+            for col in range(self.y_start, self.y_end):
+                random_color = random.choice(
+                    ['Red', 'Blue', 'Green', 'White','Magenta','Yellow','Cyan'])
+                self.grid[row][col].birth(color=random_color, is_high=True)
+                neighbours.append(self.grid[row][col])
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if row >= self.x_start and row <= self.x_end or col >= self.y_start and col <= self.y_end:
+                    self.grid[row][col].birth(
+                        neighbour_list=neighbours)
